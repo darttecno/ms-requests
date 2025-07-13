@@ -3,6 +3,8 @@ package com.example.msrequests.web.controller;
 import com.example.msrequests.service.RequestService;
 import com.example.msrequests.web.dto.RequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,12 @@ public class RequestController {
 
                 RequestDto createdRequest = requestService.createRequest(requestDto);
         return new ResponseEntity<>(createdRequest, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<RequestDto>> getAllRequests(Pageable pageable) {
+        Page<RequestDto> requests = requestService.getAllRequests(pageable);
+        return ResponseEntity.ok(requests);
     }
 
     @GetMapping("/user/{userId}")
