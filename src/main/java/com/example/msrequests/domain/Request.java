@@ -17,12 +17,9 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación LÓGICA: Solo guardamos el ID del usuario del otro microservicio.
-    // Esto NO es una relación JPA.
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    // Relación FÍSICA: Esta es una relación JPA normal porque Medication está en el mismo microservicio.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medication_id", nullable = false)
     private Medication medication;
@@ -31,16 +28,29 @@ public class Request {
     private Integer quantity;
 
     @Column(name = "status", nullable = false, length = 50)
-    private String status; // Ej: PENDING, APPROVED, REJECTED
+    private String status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    // Nuevos campos para NO POS
+    @Column(name = "order_number", length = 50)
+    private String orderNumber;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "email", length = 100)
+    private String email;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         if (status == null) {
-            status = "PENDING"; // Estado inicial por defecto
+            status = "PENDING";
         }
     }
 }

@@ -26,20 +26,32 @@ public class RequestService {
         Medication medication = medicationRepository.findById(requestDto.getMedicationId())
                 .orElseThrow(() -> new RuntimeException("Medication not found with id: " + requestDto.getMedicationId()));
 
-        // Aquí es donde harías la llamada al microservicio de usuarios para validar el userId si fuera necesario.
-        // Por ahora, confiamos en el ID que nos llega.
-
-        // 2. Crear la entidad Request
+        // 2. Crear la entidad Request y mapear campos básicos
         Request request = new Request();
         request.setUserId(requestDto.getUserId());
         request.setMedication(medication);
         request.setQuantity(requestDto.getQuantity());
-        // El estado y la fecha se asignan con @PrePersist
 
-        // 3. Guardar en la base de datos
+        // 3. Lógica de validación para medicamentos NO POS
+        if (medication.isNoPos()) {
+            // Si es NO POS, los campos adicionales son obligatorios
+            if (requestDto.getOrderNumber() == null || requestDto.getOrderNumber().isBlank() ||
+                requestDto.getAddress() == null || requestDto.getAddress().isBlank() ||
+                requestDto.getPhone() == null || requestDto.getPhone().isBlank() ||
+                requestDto.getEmail() == null || requestDto.getEmail().isBlank()) {
+                throw new IllegalArgumentException("Order number, address, phone, and email are required for NO POS medications.");
+            }
+            // Mapear los campos adicionales a la entidad
+            request.setOrderNumber(requestDto.getOrderNumber());
+            request.setAddress(requestDto.getAddress());
+            request.setPhone(requestDto.getPhone());
+            request.setEmail(requestDto.getEmail());
+        }
+
+        // 4. Guardar en la base de datos (el estado y la fecha se asignan con @PrePersist)
         Request savedRequest = requestRepository.save(request);
 
-        // 4. Convertir a DTO para la respuesta
+        // 5. Convertir a DTO para la respuesta
         return convertToDto(savedRequest);
     }
 
@@ -70,6 +82,10 @@ public class RequestService {
                 request.getQuantity(),
                 request.getStatus(),
                 request.getCreatedAt(),
+                request.getOrderNumber(),
+                request.getAddress(),
+                request.getPhone(),
+                request.getEmail(),
                 medicationDto // Devolvemos la info de la medicación anidada
         );
     }
