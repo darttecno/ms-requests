@@ -42,6 +42,16 @@ Usa Maven para compilar el proyecto. Esto descargará todas las dependencias nec
 mvn clean install
 ```
 
+### Ejecución de Pruebas
+
+Para ejecutar las pruebas unitarias y de integración del proyecto, utiliza el siguiente comando de Maven:
+
+```bash
+mvn test
+```
+
+Este comando compilará el código de prueba y ejecutará todas las pruebas definidas en el proyecto.
+
 ### Ejecución
 
 Una vez compilado, puedes ejecutar la aplicación de dos maneras:
